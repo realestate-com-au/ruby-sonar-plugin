@@ -13,29 +13,15 @@ import org.apache.commons.lang.StringUtils;
 
 public class MetricfuComplexityYamlParserImpl implements MetricfuComplexityYamlParser
 {
+
+    private ArrayList<Map<String, Object>> resultFiles;
+
     @SuppressWarnings("unchecked")
     public List<RubyFunction> parseFunctions(String fileNameFromModule, File resultsFile) throws IOException
     {
         List<RubyFunction> rubyFunctionsForFile = new ArrayList<RubyFunction>();
 
-        String fileString = FileUtils.readFileToString(resultsFile, "UTF-8");
-
-        // remove ":hotspots:" section of the yaml so snakeyaml can parse it
-        // correctly, snakeyaml throws an error with that section intact
-        // Will remove if metric_fu metric filtering works for hotspots in the
-        // future
-        int hotSpotIndex = fileString.indexOf(":hotspots:");
-        if (hotSpotIndex >= 0)
-        {
-            String stringToRemove = fileString.substring(hotSpotIndex, fileString.length());
-            fileString = StringUtils.remove(fileString, stringToRemove);
-        }
-
-        Yaml yaml = new Yaml();
-
-        Map<String, Object> metricfuResult = (Map<String, Object>) yaml.loadAs(fileString, Map.class);
-        Map<String, Object> saikuroResult = (Map<String, Object>) metricfuResult.get(":saikuro");
-        ArrayList<Map<String, Object>> saikuroFilesResult = (ArrayList<Map<String, Object>>) saikuroResult.get(":files");
+        ArrayList<Map<String, Object>> saikuroFilesResult = parseYaml(resultsFile);
 
         Map<String, Object> fileInfoToWorkWith = new HashMap<String, Object>();
         for (Map<String, Object> fileInfo : saikuroFilesResult)
@@ -72,5 +58,29 @@ public class MetricfuComplexityYamlParserImpl implements MetricfuComplexityYamlP
             }
         }
         return rubyFunctionsForFile;
+    }
+
+    private synchronized ArrayList<Map<String, Object>> parseYaml(File resultsFile) throws IOException {
+        if (resultFiles == null) {
+
+            String fileString = FileUtils.readFileToString(resultsFile, "UTF-8");
+
+            // remove ":hotspots:" section of the yaml so snakeyaml can parse it
+            // correctly, snakeyaml throws an error with that section intact
+            // Will remove if metric_fu metric filtering works for hotspots in the
+            // future
+            int hotSpotIndex = fileString.indexOf(":hotspots:");
+            if (hotSpotIndex >= 0) {
+                String stringToRemove = fileString.substring(hotSpotIndex, fileString.length());
+                fileString = StringUtils.remove(fileString, stringToRemove);
+            }
+
+            Yaml yaml = new Yaml();
+
+            Map<String, Object> metricfuResult = (Map<String, Object>) yaml.loadAs(fileString, Map.class);
+            Map<String, Object> saikuroResult = (Map<String, Object>) metricfuResult.get(":saikuro");
+            resultFiles = (ArrayList<Map<String, Object>>) saikuroResult.get(":files");
+        }
+        return resultFiles;
     }
 }
