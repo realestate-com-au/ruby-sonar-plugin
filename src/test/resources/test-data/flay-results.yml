@@ -1,0 +1,16 @@
+---
+:flay:
+  :total_score: '1496'
+  :matches:
+  - :reason: 1) Similar code found in :module (mass = 152)
+    :matches:
+    - :name: lib/property_migration/business_status_migration.rb
+      :line: '3'
+    - :name: lib/property_migration/commercial_land_status_migration.rb
+      :line: '3'
+  - :reason: 2) IDENTICAL code found in :cdecl (mass*2 = 104)
+    :matches:
+    - :name: lib/prices/project_profile_prices/project_profile_price_generator.rb
+      :line: '11'
+    - :name: lib/prices/project_profile_prices/suburb_price_generator.rb
+      :line: '11'

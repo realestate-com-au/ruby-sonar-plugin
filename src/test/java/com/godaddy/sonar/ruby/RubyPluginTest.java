@@ -22,11 +22,13 @@ public class RubyPluginTest {
 		assertTrue(extensions.contains(Ruby.class));
 		assertTrue(extensions.contains(SimpleCovRcovSensor.class));
 		assertTrue(extensions.contains(SimpleCovRcovJsonParserImpl.class));
-		assertTrue(extensions.contains(MetricfuComplexityYamlParserImpl.class));
+        assertTrue(extensions.contains(MetricfuComplexityYamlParserImpl.class));
+        assertTrue(extensions.contains(MetricfuDuplicationYamlParserImpl.class));
 		assertTrue(extensions.contains(RubySourceImporter.class));
 		assertTrue(extensions.contains(RubySourceCodeColorizer.class));
 		assertTrue(extensions.contains(RubySensor.class));
-		assertTrue(extensions.contains(MetricfuComplexitySensor.class));
+        assertTrue(extensions.contains(MetricfuComplexitySensor.class));
+        assertTrue(extensions.contains(MetricfuDuplicationSensor.class));
 		assertTrue(extensions.contains(SonarWayProfile.class));
 	}
 }
