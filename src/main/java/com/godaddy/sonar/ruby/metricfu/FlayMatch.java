@@ -14,7 +14,7 @@ public class FlayMatch
 	public final boolean isIdentical;
 
     // TODO factor mass mutliplier in to mass -> length calculation
-	private static final Pattern pattern = Pattern.compile(".*(IDENTICAL|Similar) .* \\(mass(\\*\\d+)? = (\\d+)\\)");
+    private static final Pattern pattern = Pattern.compile(".*(IDENTICAL|Similar) .* \\(mass(\\*\\d+)? = (\\d+)\\)");
 
 	public FlayMatch(String mass, List<FlayDuplication> matches, boolean isIdentical) {
 		this.mass = mass;

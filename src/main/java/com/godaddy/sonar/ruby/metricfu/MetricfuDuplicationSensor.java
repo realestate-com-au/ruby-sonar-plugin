@@ -14,6 +14,7 @@ import org.sonar.api.scan.filesystem.ModuleFileSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 public class MetricfuDuplicationSensor implements Sensor
@@ -39,46 +40,32 @@ public class MetricfuDuplicationSensor implements Sensor
 
     public void analyse(Project project, SensorContext context) {
 
+        FlayToSonarFilePathMapper mapper = new FlayToSonarFilePathMapper(moduleFileSystem);
+
         try {
             List<File> rubyFilesInProject = moduleFileSystem.files(FileQuery.onSource().onLanguage(project.getLanguageKey()));
 
+            File resultsFile = new File(moduleFileSystem.baseDir(), METRIC_FU_REPORT_FILENAME);
+            FlayDuplicationResults flayDuplicationResults = metricfuDuplicationYamlParser.parseResults(resultsFile);
+
             for (File file : rubyFilesInProject) {
-                LOG.debug("analyzing functions for classes in the file: " + file.getName());
-                File resultsFile = new File(moduleFileSystem.baseDir(), METRIC_FU_REPORT_FILENAME);
-
+                Path relativePath = mapper.findRelativePath(file);
                 RubyFile resource = new RubyFile(file, moduleFileSystem.sourceDirs());
-                LOG.debug("found sonar resourceKey: " + resource);
 
-                FlayDuplicationResults flayDuplicationResults = metricfuDuplicationYamlParser.parseResults(resultsFile);
+                LOG.debug("analyzing file: " + file.getName());
 
-                Integer duplicatedLines = flayDuplicationResults.getDuplicatedLineCountFor(file);
-                // FIXME get should never return null
-                if (duplicatedLines != null) {
-                    LOG.debug(String.format("Saving duplication metric for %s: %s", resource.getKey(), duplicatedLines));
-                    context.saveMeasure(resource, new Measure(CoreMetrics.DUPLICATED_LINES, duplicatedLines.doubleValue()));
-                }
+                if (flayDuplicationResults.hasResultsFor(relativePath)) {
+                    int duplicatedLines = flayDuplicationResults.getDuplicatedLineCountFor(relativePath);
+                    LOG.debug(String.format("Saving duplicated lines metric: %s", duplicatedLines));
+                    context.saveMeasure(resource, new Measure(CoreMetrics.DUPLICATED_LINES, Double.valueOf(duplicatedLines)));
 
-                List<FlayDuplicateBlock> duplicatedBlocks = flayDuplicationResults.getDuplicatedBlocksFor(file);
-                // FIXME get should never return null
-                if (duplicatedBlocks != null) {
-                    LOG.debug(String.format("Saving duplication metric for %s: %s", resource.getKey(), duplicatedBlocks));
+                    List<FlayDuplicateBlock> duplicatedBlocks = flayDuplicationResults.getDuplicatedBlocksFor(relativePath);
+                    LOG.debug(String.format("Saving duplicated blocks metric: %s", duplicatedBlocks.size()));
                     context.saveMeasure(resource, new Measure(CoreMetrics.DUPLICATED_BLOCKS, Double.valueOf(duplicatedBlocks.size())));
-//
-//                    StringBuilder blocksXML = new StringBuilder();
-//                    for (FlayDuplicateBlock block : duplicatedBlocks) {
-//                        blocksXML.append(block.asXML(resource.getKey()));
-//                    }
-//                    LOG.debug(String.format("Saving duplicate block data for %s: %s", resource.getKey(), blocksXML));
-//                    context.saveMeasure(resource, new Measure(CoreMetrics.DUPLICATIONS_DATA, makeXML(blocksXML.toString())));
                 }
             }
         } catch (IOException e) {
             LOG.error("Cannot parse MetricFu duplications results: ", e);
         }
     }
-
-    private String makeXML(String blocks) {
-        return String.format("<duplications><g>%s</g></duplications>", blocks);
-    }
-
 }

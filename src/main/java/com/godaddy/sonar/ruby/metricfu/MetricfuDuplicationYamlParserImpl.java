@@ -14,12 +14,6 @@ import java.util.Map;
 public class MetricfuDuplicationYamlParserImpl implements MetricfuDuplicationYamlParser
 {
 
-    private final ModuleFileSystem filesystem;
-
-    public MetricfuDuplicationYamlParserImpl(ModuleFileSystem fs) {
-        filesystem = fs;
-    }
-
     @SuppressWarnings("unchecked")
     public FlayDuplicationResults parseResults(File resultsFile) throws IOException {
 
@@ -36,7 +30,7 @@ public class MetricfuDuplicationYamlParserImpl implements MetricfuDuplicationYam
                 duplications.addAll(flayMatch.matches);
             }
         }
-        return new FlayDuplicationResults(filesystem, duplicatedLinesByFile(duplications), duplicatedBlocksByFile(duplications));
+        return new FlayDuplicationResults(duplicatedLinesByFile(duplications), duplicatedBlocksByFile(duplications));
     }
 
     private Map<String, Integer> duplicatedLinesByFile(List<FlayDuplication> duplications) {
@@ -68,15 +62,15 @@ public class MetricfuDuplicationYamlParserImpl implements MetricfuDuplicationYam
     }
 
     private Integer lengthFromMass(int mass) {
-    /*
-     * Just a SWAG to derive a duplication "length" from flay's "mass", which is more or less the number of sexprs:
-     *
-     *  def mass
-     *    @mass ||= self.structure.flatten.size
-     *  end
-     *
-     *  https://github.com/seattlerb/sexp_processor/blob/master/lib/sexp.rb#L201
-     */
+        /*
+         * Just a SWAG to derive a duplication "length" from flay's "mass", which is more or less the number of sexprs:
+         *
+         *  def mass
+         *    @mass ||= self.structure.flatten.size
+         *  end
+         *
+         *  https://github.com/seattlerb/sexp_processor/blob/master/lib/sexp.rb#L201
+         */
         return mass / 8;
     }
 }
