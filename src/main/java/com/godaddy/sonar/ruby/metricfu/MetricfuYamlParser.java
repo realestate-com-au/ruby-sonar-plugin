@@ -3,6 +3,7 @@ package com.godaddy.sonar.ruby.metricfu;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +11,15 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.sonar.api.BatchExtension;
+import org.sonar.api.scan.filesystem.FileQuery;
+import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.yaml.snakeyaml.Yaml;
 
 import com.godaddy.sonar.ruby.metricfu.FlayReason.Match;
 
 public class MetricfuYamlParser implements BatchExtension {
-	private Logger logger = Logger.getLogger(MetricfuYamlParser.class);
+    private final ModuleFileSystem moduleFileSystem;
+    private Logger logger = Logger.getLogger(MetricfuYamlParser.class);
 
 	private static final String REPORT_FILE = "tmp/metric_fu/report.yml";
 	private static Pattern escapePattern = Pattern.compile("\\e\\[\\d+m", Pattern.CASE_INSENSITIVE);
@@ -28,15 +32,16 @@ public class MetricfuYamlParser implements BatchExtension {
 	ArrayList<Map<String, Object>> reekFiles = null;
 	ArrayList<Map<String, Object>> flayReasons = null;
 
-	public MetricfuYamlParser() {
-		this(REPORT_FILE);
-	}
+	public MetricfuYamlParser(ModuleFileSystem moduleFileSystem) {
+		this(moduleFileSystem, REPORT_FILE);
+    }
 
 	@SuppressWarnings("unchecked")
-	public MetricfuYamlParser(String filename) {
+	public MetricfuYamlParser(ModuleFileSystem moduleFileSystem, String filename) {
+        this.moduleFileSystem = moduleFileSystem;
 
 		try {
-			FileInputStream input = new FileInputStream(new File(filename));
+            FileInputStream input = new FileInputStream(new File(moduleFileSystem.baseDir(), filename));
 			Yaml yaml = new Yaml();
 
 			this.metricfuResult = (Map<String, Object>)yaml.loadAs(input, Map.class);
@@ -239,10 +244,5 @@ public class MetricfuYamlParser implements BatchExtension {
 		} catch (Exception e) {
 			return 0;
 		}
-	}
-
-	public static void main(String[] args) {
-		MetricfuYamlParser parser = new MetricfuYamlParser("/home/gallen/work/report.yml");
-		parser.parseFlay();
 	}
 }
