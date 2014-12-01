@@ -20,7 +20,6 @@ import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 
 import com.godaddy.sonar.ruby.RubySensor;
-import com.godaddy.sonar.ruby.core.RubyFile;
 
 
 public class MetricfuComplexitySensorTest 
@@ -89,9 +88,9 @@ public class MetricfuComplexitySensorTest
 		expect(moduleFileSystem.files(isA(FileQuery.class))).andReturn(sourceFiles);
 		expect(moduleFileSystem.sourceDirs()).andReturn(sourceDirs);
 		expect(metricfuComplexityYamlParser.parseFunctions(isA(String.class),isA(File.class))).andReturn(functions);
-		expect(sensorContext.saveMeasure(isA(RubyFile.class), isA(Metric.class), isA(Double.class))).andReturn(measure).times(2);
-		expect(sensorContext.saveMeasure(isA(RubyFile.class), isA(Measure.class))).andReturn(measure).times(2);
-		
+		expect(sensorContext.saveMeasure(isA(org.sonar.api.resources.File.class), isA(Metric.class), isA(Double.class))).andReturn(measure).times(2);
+		expect(sensorContext.saveMeasure(isA(org.sonar.api.resources.File.class), isA(Measure.class))).andReturn(measure).times(2);
+
 		mocksControl.replay();
 
 		metricfuComplexitySensor.analyse(project, sensorContext);
