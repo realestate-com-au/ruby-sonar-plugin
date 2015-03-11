@@ -15,7 +15,6 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 
 import com.godaddy.sonar.ruby.core.Ruby;
-import com.godaddy.sonar.ruby.core.RubyFile;
 
 public class SimpleCovRcovSensor implements Sensor 
 {
@@ -65,14 +64,14 @@ public class SimpleCovRcovSensor implements Sensor
             {
                 String fileName = entry.getKey();
                 sourceFile = new File(fileName);
-                RubyFile rubyFile = new RubyFile(sourceFile, sourceDirs);
+                org.sonar.api.resources.File resource = org.sonar.api.resources.File.fromIOFile(sourceFile, sourceDirs);
 
                 CoverageMeasuresBuilder fileCoverage = entry.getValue();
                 if (fileCoverage != null) 
                 {
                     for (Measure measure : fileCoverage.createMeasures()) 
                     {
-                        context.saveMeasure(rubyFile, measure);
+                        context.saveMeasure(resource, measure);
                     }
                 }
             } 

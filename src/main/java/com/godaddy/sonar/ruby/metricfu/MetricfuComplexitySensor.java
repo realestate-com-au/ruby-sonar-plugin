@@ -59,8 +59,9 @@ public class MetricfuComplexitySensor implements Sensor
 
     private void analyzeFile(File file, List<File> sourceDirs, SensorContext sensorContext, File resultsFile) throws IOException
     {
-        RubyFile resource = new RubyFile(file, sourceDirs);
-        List<RubyFunction> functions = metricfuComplexityYamlParser.parseFunctions(resource.getName(), resultsFile);
+        RubyFile rubyFile = new RubyFile(file, sourceDirs);
+        org.sonar.api.resources.File resource = org.sonar.api.resources.File.fromIOFile(file, sourceDirs);
+        List<RubyFunction> functions = metricfuComplexityYamlParser.parseFunctions(rubyFile.getName(), resultsFile);
 
         // if function list is empty, then return, do not compute any complexity
         // on that file

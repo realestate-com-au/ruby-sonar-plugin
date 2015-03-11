@@ -1,7 +1,6 @@
 package com.godaddy.sonar.ruby;
 
 import com.godaddy.sonar.ruby.core.Ruby;
-import com.godaddy.sonar.ruby.core.RubyFile;
 import com.godaddy.sonar.ruby.core.RubyPackage;
 import com.godaddy.sonar.ruby.core.RubyRecognizer;
 import com.godaddy.sonar.ruby.parsers.CommentCountParser;
@@ -22,7 +21,6 @@ import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class RubySensor implements Sensor
@@ -47,7 +45,6 @@ public class RubySensor implements Sensor
     protected void computeBaseMetrics(SensorContext sensorContext, Project project)
     {
         Reader reader = null;
-        List<File> sourceDirs = moduleFileSystem.sourceDirs();
 
         Set<RubyPackage> packageList = new HashSet<RubyPackage>();
         for (File rubyFile : moduleFileSystem.files(FileQuery.onSource().onLanguage(project.getLanguageKey())))
@@ -55,7 +52,7 @@ public class RubySensor implements Sensor
             try
             {
                 reader = new StringReader(FileUtils.readFileToString(rubyFile, moduleFileSystem.sourceCharset().name()));
-                RubyFile resource = new RubyFile(rubyFile, sourceDirs);
+                org.sonar.api.resources.File resource = org.sonar.api.resources.File.fromIOFile(rubyFile, project);
                 Source source = new Source(reader, new RubyRecognizer());
                 packageList.add(new RubyPackage(resource.getParent().getKey()));
 

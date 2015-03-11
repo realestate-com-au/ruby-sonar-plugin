@@ -20,7 +20,6 @@ import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 
-import com.godaddy.sonar.ruby.core.RubyFile;
 
 public class SimpleCovRcovSensorTest 
 {
@@ -108,7 +107,7 @@ public class SimpleCovRcovSensorTest
 		List<File> sourceDirs = new ArrayList<File>();	
 		for (String fileName : jsonResults.keySet())
 		{
-			sourceDirs.add(new File(fileName));
+			sourceDirs.add(new File(fileName).getParentFile());
 		}
 		
 		Measure measure = new Measure();		
@@ -116,8 +115,8 @@ public class SimpleCovRcovSensorTest
 		
 		expect(moduleFileSystem.sourceDirs()).andReturn(sourceDirs).once();
 		expect(simpleCovRcovJsonParser.parse(eq(new File("coverage/.resultset.json")))).andReturn(jsonResults).once();
-		expect(sensorContext.saveMeasure(isA(RubyFile.class), isA(Measure.class))).andReturn(measure).times(9);
-	
+		expect(sensorContext.saveMeasure(isA(org.sonar.api.resources.File.class), isA(Measure.class))).andReturn(measure).times(9);
+
 		mocksControl.replay();
 
 		simpleCovRcovSensor.analyse(new Project("key_name"), sensorContext);
@@ -133,7 +132,7 @@ public class SimpleCovRcovSensorTest
 		List<File> sourceDirs = new ArrayList<File>();	
 		for (String fileName : jsonResults.keySet())
 		{
-			sourceDirs.add(new File(fileName));
+			sourceDirs.add(new File(fileName).getParentFile());
 		}
 		
 		Measure measure = new Measure();		
@@ -141,8 +140,8 @@ public class SimpleCovRcovSensorTest
 		
 		expect(moduleFileSystem.sourceDirs()).andReturn(sourceDirs).once();
 		expect(simpleCovRcovJsonParser.parse(eq(new File("coverage/.resultset.json")))).andReturn(jsonResults).once();
-		expect(sensorContext.saveMeasure(isA(RubyFile.class), isA(Measure.class))).andReturn(measure).times(36);
-	
+		expect(sensorContext.saveMeasure(isA(org.sonar.api.resources.File.class), isA(Measure.class))).andReturn(measure).times(36);
+
 		mocksControl.replay();
 
 		simpleCovRcovSensor.analyse(new Project("key_name"), sensorContext);

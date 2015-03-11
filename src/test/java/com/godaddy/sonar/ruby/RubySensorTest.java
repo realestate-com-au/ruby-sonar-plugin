@@ -19,18 +19,20 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.scan.filesystem.FileQuery;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 
-import com.godaddy.sonar.ruby.core.RubyFile;
 import com.godaddy.sonar.ruby.core.RubyPackage;
 
+@SuppressWarnings("deprecation")
 public class RubySensorTest {
 	public static String INPUT_SOURCE_DIR = "src/test/resources/test-data";
 	public static String INPUT_SOURCE_FILE = "src/test/resources/test-data/hello_world.rb";
 
 	private IMocksControl mocksControl;
 	private ModuleFileSystem moduleFileSystem;
+	private ProjectFileSystem projectFileSystem;
 	private SensorContext sensorContext;
 	private Configuration config;
 	private Project project;
@@ -41,12 +43,14 @@ public class RubySensorTest {
 	public void setUp() throws Exception {
 		mocksControl = EasyMock.createControl();
 		moduleFileSystem = mocksControl.createMock(ModuleFileSystem.class);
+		projectFileSystem = mocksControl.createMock(ProjectFileSystem.class);
 
 		config = mocksControl.createMock(Configuration.class);
 		expect(config.getString("sonar.language", "java")).andStubReturn("ruby");
 
 		project = new Project("test project");
 		project.setConfiguration(config);
+		project.setFileSystem(projectFileSystem);
 
 		sensorContext = mocksControl.createMock(SensorContext.class);
 
@@ -84,9 +88,9 @@ public class RubySensorTest {
 		Measure measure = new Measure();
 		
 		expect(moduleFileSystem.files(isA(FileQuery.class))).andReturn(files).once();
-		expect(moduleFileSystem.sourceDirs()).andReturn(sourceDirs).once();
+		expect(projectFileSystem.getSourceDirs()).andReturn(sourceDirs).once();
 		expect(moduleFileSystem.sourceCharset()).andReturn(Charset.defaultCharset()).once();
-		expect(sensorContext.saveMeasure(isA(RubyFile.class), isA(Metric.class), isA(Double.class))).andReturn(measure).times(5);
+		expect(sensorContext.saveMeasure(isA(org.sonar.api.resources.File.class), isA(Metric.class), isA(Double.class))).andReturn(measure).times(5);
 		expect(sensorContext.saveMeasure(isA(RubyPackage.class), isA(Metric.class), isA(Double.class))).andReturn(measure).times(1);
 
 		mocksControl.replay();
