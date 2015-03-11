@@ -1,0 +1,51 @@
+---
+:saikuro:
+  :files:
+  - :classes:
+    - :class_name: FooBar
+      :complexity: 13
+      :lines: 36
+      :methods:
+      - :name: FooBar#validate_user_name
+        :complexity: 10
+        :lines: 500
+      - :name: FooBar#validate_password
+        :complexity: 3
+        :lines: 4
+    :filename: lib/some_path/foo_bar.rb
+  - :classes:
+    - :class_name: ''
+      :complexity: 0
+      :lines: 1
+      :methods: []
+    - :class_name: "::"
+      :complexity: 0
+      :lines: 2
+      :methods: []
+    - :class_name: !binary |-
+        Ojo6OkF0bMOibnRpY28=
+      :complexity: 0
+      :lines: 9
+      :methods: []
+    - :class_name: !binary |-
+        Ojo6OkF0bMOibnRpY286Og==
+      :complexity: 0
+      :lines: 1
+      :methods: []
+    - :class_name: !binary |-
+        Ojo6OkF0bMOibnRpY286Ojo6
+      :complexity: 0
+      :lines: 3
+      :methods: []
+    - :class_name: !binary |-
+        Ojo6OkF0bMOibnRpY286Ojo6Ojo=
+      :complexity: 0
+      :lines: 0
+      :methods: []
+    - :class_name: !binary |-
+        Ojo6OkF0bMOibnRpY286Ojo6Ojo6Og==
+      :complexity: 2
+      :lines: 9
+      :methods: []
+    :filename: app/views/shared/_header.html.erb
+:hotspots:

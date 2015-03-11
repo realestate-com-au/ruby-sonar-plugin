@@ -31,6 +31,10 @@ public class MetricfuComplexityYamlParserImpl implements MetricfuComplexityYamlP
             fileString = StringUtils.remove(fileString, stringToRemove);
         }
 
+        // change 'name: !binary' to 'name: tag:yaml.org,2002:binary'
+        // normally this !binary tags will be on the metric_fu analysis of .erb files as 'class_name: !binary' and 'name: !binary'
+        fileString = StringUtils.replace(fileString, "name: !binary", "name: tag:yaml.org,2002:binary");
+
         Yaml yaml = new Yaml();
 
         Map<String, Object> metricfuResult = (Map<String, Object>) yaml.loadAs(fileString, Map.class);
